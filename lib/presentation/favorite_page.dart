@@ -84,7 +84,8 @@ class _FavoritePageState extends State<FavoritePage> {
                             PageTransition(
                               child: RaspPage(
                                   name: favorites[index].name,
-                                  id: favorites[index].id),
+                                  id: favorites[index].id,
+                                  type: favorites[index].type == 'group' ? TypeRasp.group : TypeRasp.teacher,),
                               type: PageTransitionType.bottomToTop,
                             ),
                           );

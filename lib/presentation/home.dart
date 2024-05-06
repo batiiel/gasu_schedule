@@ -8,12 +8,10 @@ import 'package:gagu_schedule/constants.dart';
 import 'package:gagu_schedule/domain/bloc/favorite_bloc/favorite_bloc.dart';
 import 'package:gagu_schedule/domain/bloc/interner_bloc/internet_cubit.dart';
 import 'package:gagu_schedule/domain/bloc/interner_bloc/internet_state.dart';
-import 'package:gagu_schedule/domain/bloc/rasp_bloc/rasp_bloc.dart';
 import 'package:gagu_schedule/domain/bloc/teacher_bloc/teacher_bloc.dart';
 import 'package:gagu_schedule/internal/dependecies/favorite_module.dart';
 import 'package:gagu_schedule/internal/dependecies/group_module.dart';
 import 'package:gagu_schedule/domain/bloc/group_bloc/group_bloc.dart';
-import 'package:gagu_schedule/internal/dependecies/rasp_module.dart';
 import 'package:gagu_schedule/internal/dependecies/teacher_module.dart';
 import 'package:gagu_schedule/presentation/favorite_page.dart';
 

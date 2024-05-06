@@ -27,7 +27,8 @@ class FavoriteService {
         onCreate: (Database db, int version) async {
       await db.execute("""CREATE TABLE Favorite (
               id_favorite INTEGER unique,
-              name TEXT
+              name TEXT,
+              type TEXT
           )""");
     });
   }

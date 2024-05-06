@@ -22,3 +22,8 @@ class ColorApp {
 class RadiusApp {
   static final radiusItem = BorderRadius.circular(8.0);
 }
+
+enum TypeRasp{
+  group,
+  teacher
+}

@@ -47,11 +47,11 @@ class ApiUtil {
   Future<List<Favorite>> getListFavorite() async {
     final restul = await sqlService.getListFavorite();
     return List.generate(restul.length,
-        (index) => Favorite(name: restul[index].name, id: restul[index].id));
+        (index) => Favorite(name: restul[index].name, id: restul[index].id, type: restul[index].type));
   }
 
   Future<void> addFavorite(Favorite item) async {
-    sqlService.addFavorite(FavoriteApi(name: item.name, id: item.id));
+    sqlService.addFavorite(FavoriteApi(name: item.name, id: item.id, type: item.type));
   }
 
   Future<void> deleteFavorite(int id) async {

@@ -6,10 +6,10 @@ abstract class RaspEvent {}
 // ignore: must_be_immutable
 class GetRaspEvent extends RaspEvent {
   final int id;
-  final String type;
+  final TypeRasp type;
   String date;
 
-  GetRaspEvent({required this.id, this.type = 'g', this.date = ''});
+  GetRaspEvent({required this.id, required this.type, this.date = ''});
 }
 
 class SetIndexEvent extends RaspEvent {

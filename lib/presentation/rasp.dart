@@ -11,10 +11,10 @@ import 'package:intl/date_symbol_data_local.dart';
 
 class RaspPage extends StatefulWidget {
   const RaspPage(
-      {super.key, required this.name, required this.id, this.type = ''});
+      {super.key, required this.name, required this.id, required this.type});
   final String name;
   final int id;
-  final String type;
+  final TypeRasp type;
 
   @override
   State<RaspPage> createState() => _RaspPageState();
@@ -23,14 +23,13 @@ class RaspPage extends StatefulWidget {
 class _RaspPageState extends State<RaspPage> {
   DateTime? tempDate;
   int weekDayIndex = -1;
-  late RaspState state;
+  late RaspState stateRasp;
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting();
     tempDate = DateTime.now();
-    // weekDayIndex = context.select((RaspBloc bloc) => bloc.state.indexWeek);
   }
 
   @override
@@ -41,55 +40,58 @@ class _RaspPageState extends State<RaspPage> {
       create: (context) {
         String strDate = DateFormat('yyyy-MM-dd').format(tempDate!);
         return raspBloc
-          ..add(GetRaspEvent(id: widget.id, date: strDate, type: widget.type));
+          ..add(GetRaspEvent(id: widget.id, type: widget.type,date: strDate,));
       },
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: ColorApp.barBackroud,
-          automaticallyImplyLeading: false,
-          title: Center(
-              child: Text(
-            widget.name,
-            style: const TextStyle(
-              color: ColorApp.textActive,
-              fontSize: 28.0,
-              fontWeight: FontWeight.w600,
-            ),
-          )),
-          actions: [
-            BlocBuilder<RaspBloc, RaspState>(
-              builder: (context, state) {
-                return IconButton(
-                  onPressed: () async {
-                    tempDate = await showDatePicker(
-                      context: context,
-                      locale: const Locale("ru"),
-                      initialDate: tempDate ?? DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
-                    );
-                    if (tempDate != null) {
-                      String strDate =
-                          DateFormat('yyyy-MM-dd').format(tempDate!);
-                      context.read<RaspBloc>().add(GetRaspEvent(
-                            id: widget.id,
-                            date: strDate,
-                            type: widget.type,
-                          ));
-                      setState(() {
-                        weekDayIndex = state.indexWeek;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.calendar_month),
-                );
-              },
-            ),
-          ],
-        ),
-        backgroundColor: ColorApp.mainBackroud,
-        body: getBody(),
+      child: 
+      BlocBuilder<RaspBloc, RaspState>(
+        builder: (context, state) {
+        final raspBloc = BlocProvider.of<RaspBloc>(context);
+        stateRasp = state;
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: ColorApp.barBackroud,
+            automaticallyImplyLeading: false,
+            title: Center(
+                child: Text(
+              widget.name,
+              style: const TextStyle(
+                color: ColorApp.textActive,
+                fontSize: 28.0,
+                fontWeight: FontWeight.w600,
+              ),
+            )),
+            actions: [
+               IconButton(
+                    onPressed: () async {
+                      tempDate = await showDatePicker(
+                        context: context,
+                        locale: const Locale("ru"),
+                        initialDate: tempDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (tempDate != null) {
+                        String strDate =
+                            DateFormat('yyyy-MM-dd').format(tempDate!);
+                        raspBloc.add(GetRaspEvent(
+                              id: widget.id,
+                              date: strDate,
+                              type: widget.type,
+                            ));
+                        setState(() {
+                          weekDayIndex = state.indexWeek;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.calendar_month),
+                  ),
+            ],
+          ),
+          backgroundColor: ColorApp.mainBackroud,
+          body: getBody(),
+        );
+        },
       ),
     );
   }
@@ -109,7 +111,6 @@ class _RaspPageState extends State<RaspPage> {
   }
 
   Widget dateInput() {
-    // final state = context.select((RaspBloc raspBloc) => raspBloc.state);
     return Container(
       padding: EdgeInsets.zero,
       decoration: const BoxDecoration(
@@ -120,23 +121,18 @@ class _RaspPageState extends State<RaspPage> {
       child: Center(
         child: Builder(
           builder: (context) {
-            state = context.watch<RaspBloc>().state;
-            final week = state.week;
-            weekDayIndex = state.indexWeek;
-            print("stae = $weekDayIndex");
-            // if (week.isNotEmpty) {
             return ListView.builder(
-              itemCount: week.length,
+              itemCount: stateRasp.week.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (BuildContext context, int index) {
-                final boxColor = index == weekDayIndex
+                final boxColor = index == stateRasp.indexWeek
                     ? ColorApp.active
                     : ColorApp.barBackroud;
-                final textColor = index == weekDayIndex
+                final textColor = index == stateRasp.indexWeek
                     ? ColorApp.textBalck
                     : ColorApp.textActive2;
                 final circleColor =
-                    week[index].rasp.isNotEmpty ? textColor : boxColor;
+                    stateRasp.week[index].rasp.isNotEmpty ? textColor : boxColor;
                 return Container(
                   margin: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -146,19 +142,16 @@ class _RaspPageState extends State<RaspPage> {
                   child: InkWell(
                     onTap: () {
                       context.read<RaspBloc>().add(SetIndexEvent(index: index));
-                      setState(() {
-                        weekDayIndex = state.indexWeek;
-                      });
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          week[index].day,
+                          stateRasp.week[index].day,
                           style: TextStyle(fontSize: 24, color: textColor),
                         ),
                         Text(
-                          week[index].weekDay,
+                          stateRasp.week[index].weekDay,
                           style: TextStyle(color: textColor),
                         ),
                         Icon(
@@ -172,8 +165,6 @@ class _RaspPageState extends State<RaspPage> {
                 );
               },
             );
-            // }
-            // return const Text('');
           },
         ),
       ),
@@ -185,12 +176,11 @@ class _RaspPageState extends State<RaspPage> {
       child: Center(
         child: Builder(
           builder: (context) {
-            // final state = context.watch<RaspBloc>().state;
-            final week = state.week;
-            print("stae1 = $weekDayIndex");
-            print("stae2 = ${state.indexWeek}");
-            if (week.isNotEmpty) {
-              final rasp = week[weekDayIndex].rasp;
+            if(stateRasp.isLoading){
+              return const CircularProgressIndicator();
+            }
+            if (stateRasp.week.isNotEmpty) {
+              final rasp = stateRasp.week[stateRasp.indexWeek].rasp;
               return ListView.builder(
                 itemCount: rasp.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -297,117 +287,3 @@ class _RaspPageState extends State<RaspPage> {
     );
   }
 }
-//  Row(
-//             children: [
-//               const Icon(
-//                 Icons.access_time_rounded,
-//                 size: 16.0,
-//               ),
-//               const SizedBox(
-//                 width: 7.0,
-//               ),
-//               Text(
-//                 "${rasp[index].start_time} - ",
-//                 style: const TextStyle(
-//                   fontSize: 16.0,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               Text(
-//                 rasp[index].end_time,
-//                 style: const TextStyle(
-//                   fontSize: 16.0,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 1.0,
-//           ),
-//           Row(
-//             children: [
-//               const Icon(
-//                 Icons.groups,
-//                 size: 16.0,
-//               ),
-//               const SizedBox(
-//                 width: 7.0,
-//               ),
-//               Flexible(
-//                 child: Text(
-//                   "Группа: ${rasp[index].group}",
-//                   style: const TextStyle(
-//                     fontSize: 16.0,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 1.0,
-//           ),
-//           Row(
-//             children: [
-//               const Icon(
-//                 Icons.book_outlined,
-//                 size: 16.0,
-//               ),
-//               const SizedBox(
-//                 width: 7.0,
-//               ),
-//               Flexible(
-//                 child: Text(
-//                   rasp[index].discipline,
-//                   style: const TextStyle(
-//                     overflow: TextOverflow.clip,
-//                     fontSize: 16.0,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 1.0,
-//           ),
-//           Row(
-//             children: [
-//               const Icon(
-//                 Icons.school_outlined,
-//                 size: 16.0,
-//               ),
-//               const SizedBox(
-//                 width: 7.0,
-//               ),
-//               Text(
-//                 rasp[index].teacher,
-//                 style: const TextStyle(
-//                   fontSize: 16.0,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 1.0,
-//           ),
-//           Row(
-//             children: [
-//               const Icon(
-//                 Icons.location_on_outlined,
-//                 size: 16.0,
-//               ),
-//               const SizedBox(
-//                 width: 7.0,
-//               ),
-//               Text(
-//                 "Аудитория: ${rasp[index].classroom}",
-//                 style: const TextStyle(
-//                   fontSize: 16.0,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//             ],
-//           ),

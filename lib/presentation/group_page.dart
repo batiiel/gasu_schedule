@@ -109,7 +109,8 @@ class _GroupPageState extends State<GroupPage> {
                             context.read<FavoriteBloc>().add(AddFavoriteEvent(
                                 item: Favorite(
                                     name: groups[index].name,
-                                    id: groups[index].id)));
+                                    id: groups[index].id,
+                                    type: 'group',)));
                           },
                         ),
                         onTap: () {
@@ -118,7 +119,8 @@ class _GroupPageState extends State<GroupPage> {
                             PageTransition(
                               child: RaspPage(
                                   name: groups[index].name,
-                                  id: groups[index].id),
+                                  id: groups[index].id,
+                                  type: TypeRasp.group,),
                               type: PageTransitionType.bottomToTop,
                             ),
                           );

@@ -104,6 +104,7 @@ class _TeacherPageState extends State<TeacherPage> {
                                     item: Favorite(
                                   name: teachers[index].name,
                                   id: teachers[index].id,
+                                  type: 'teacher',
                                 )));
                           },
                         ),
@@ -114,7 +115,7 @@ class _TeacherPageState extends State<TeacherPage> {
                               child: RaspPage(
                                 name: teachers[index].name,
                                 id: teachers[index].id,
-                                type: 't',
+                                type: TypeRasp.teacher,
                               ),
                               type: PageTransitionType.bottomToTop,
                             ),
